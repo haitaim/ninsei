@@ -33,7 +33,7 @@ namespace ninsei {
             return *reg_address;
         }
 
-        Reg_size& operator=(Reg_size bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
+        Mem_mapped_reg& operator=(Reg_size bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
             *reg_address = bitmask;
             return *this;
         }

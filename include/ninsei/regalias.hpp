@@ -57,7 +57,41 @@ namespace ninsei {
         using Alpha_blend = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0052>;
         using Brightness = Mem_mapped_reg<std::uint16_t, readWriteMod::Write_only, mmio_address + 0x0054>;
         }
+        namespace sound {
+            using Channel1_sweep = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0060>;
+            using Channel1_duty = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0062>;
+            using Channel1_frequency = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0064>;
 
+            using Channel2_duty = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0068>;
+            using Channel2_frequency = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x006C>;
+
+            using Channel3_stop_wave = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0070>;
+            using Channel3_length = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0072>;
+            using Channel3_frequency = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0074>;
+
+            using Channel4_length = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0078>;
+            using Channel4_frequency = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x007C>;
+
+            using Stereo_volume = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0080>;
+            using Mixing_dma = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0082>;
+            using Sound_on_off = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0084>;
+        }
+        namespace dma {
+
+        }
+        namespace timer {
+
+        }
+        namespace serialCom {
+
+        }
+        namespace keypad {
+            using Status = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_only, mmio_address + 0x0130>;
+            using Interrupt_control = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, mmio_address + 0x0132>;
+        }
+        namespace interrupt {
+
+        }
     }
 }
 

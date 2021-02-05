@@ -19,11 +19,9 @@ namespace ninsei {
         concept ReadAccess = std::derived_from<T, Read_only>;
         template <typename T>
         concept WriteAccess = std::derived_from<T, Write_only>;
-        template <typename T>
-        concept RegisterAccess = ReadAccess<T> || WriteAccess<T>;
     }
     namespace reg {
-        template <std::unsigned_integral Reg_size, readWriteMod::RegisterAccess Reg_access, std::uint32_t address>
+        template <std::unsigned_integral Reg_size, typename Reg_access, std::uint32_t address>
         class Mem_mapped_reg {
         public:
             Mem_mapped_reg() : reg_address { reinterpret_cast<volatile Reg_size*>(address) } {};

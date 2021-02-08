@@ -24,25 +24,20 @@ namespace ninsei {
         template <std::unsigned_integral Reg_size, typename Reg_access, std::uint32_t address>
         class Mem_mapped_reg {
         public:
-            Mem_mapped_reg() : reg_address { reinterpret_cast<volatile Reg_size*>(address) } {};
-
             [[nodiscard("Unused volatile read")]]
-            Reg_size read() const noexcept requires readWriteMod::ReadAccess<Reg_access> {
-                return *reg_address;
+            static inline Reg_size read() noexcept requires readWriteMod::ReadAccess<Reg_access> {
+                return *reinterpret_cast<volatile Reg_size*>(address);
             }
 
-            Mem_mapped_reg& operator=(Reg_size bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
-                *reg_address = bitmask;
-                return *this;
+            static inline void write(Reg_size bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
+                *reinterpret_cast<volatile Reg_size*>(address) = bitmask;
             }
 
+            Mem_mapped_reg() = delete;
             Mem_mapped_reg(const Mem_mapped_reg&) = delete;
             Mem_mapped_reg(Mem_mapped_reg&&) = delete;
             Mem_mapped_reg& operator=(const Mem_mapped_reg&) = delete;
             Mem_mapped_reg& operator=(Mem_mapped_reg&&) = delete;
-
-        private:
-            volatile Reg_size* reg_address;
         };
     }
 }

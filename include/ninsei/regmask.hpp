@@ -7,7 +7,7 @@
 namespace ninsei::reg {
 namespace mask {
     template<typename Reg_size>
-    Reg_size enable_bit(Reg_size bitmask, const unsigned int bit_position, bool enable) {
+    inline Reg_size enable_bit(Reg_size bitmask, const unsigned int bit_position, bool enable) {
         if (enable) {
             bitmask |= (1 << bit_position);
         } else {
@@ -19,6 +19,7 @@ namespace mask {
     class Display_control : public Register_mask {
     public:
         consteval Display_control() : bitmask { 0 } {}
+        consteval Display_control(std::uint32_t input_mask) : bitmask { input_mask } {}
         
         template <unsigned mode> requires (mode >= 0 && mode <= 3)
         void set_mode() {
@@ -30,6 +31,9 @@ namespace mask {
         }
         void oam_hblank_access(bool enable) {
             bitmask = enable_bit(bitmask, 5, enable);
+        }
+        void object_mapping_mode(bool mode) {
+            bitmask = enable_bit(bitmask, 6, mode);
         }
         void force_blank(bool enable) {
             bitmask = enable_bit(bitmask, 7, enable);

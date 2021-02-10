@@ -14,7 +14,12 @@ namespace lcd {
         memAddress::io_registers,
         mask::Display_control
         >;
-    using Display_status = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, memAddress::io_registers + 0x0004>;
+    using Display_status = Mem_mapped_reg<
+        std::uint16_t,
+        readWriteMod::Read_write,
+        memAddress::io_registers + 0x0004,
+        mask::Display_status
+        >;
     using Vertical_count = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_only, memAddress::io_registers + 0x0006>;
 
     using Background0_control = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, memAddress::io_registers + 0x0008>;

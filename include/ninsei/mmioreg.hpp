@@ -20,8 +20,15 @@ namespace readWriteMod {
     template <typename T>
     concept WriteAccess = std::derived_from<T, Write_only>;
 }
+namespace mask {
+    class Register_mask {
+        Register_mask() = delete;
+    };
+    template <typename T>
+    concept ValidBitmask = std::derived_from<T, Register_mask>;
+}
 
-template <std::unsigned_integral Reg_size, typename Reg_access, std::uint32_t address>
+template <std::unsigned_integral Reg_size, typename Reg_access, unsigned address, mask::ValidBitmask Reg_mask = mask::Register_mask>
 class Mem_mapped_reg {
 public:
     [[nodiscard("Unused volatile read")]]
@@ -31,6 +38,10 @@ public:
 
     static inline void write(Reg_size bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
         *reinterpret_cast<volatile Reg_size*>(address) = bitmask;
+    }
+    
+    static inline void write(Reg_mask bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
+        *reinterpret_cast<volatile Reg_size*>(address) = bitmask.raw_bitmask();
     }
 
     Mem_mapped_reg() = delete;

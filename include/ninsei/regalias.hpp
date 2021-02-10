@@ -3,11 +3,17 @@
 
 #include "memmap.hpp"
 #include "mmioreg.hpp"
+#include "regmask.hpp"
 #include <cstdint>
 
 namespace ninsei::reg {
 namespace lcd {
-    using Display_control = Mem_mapped_reg<std::uint32_t, readWriteMod::Read_write, memAddress::io_registers>;
+    using Display_control = Mem_mapped_reg<
+        std::uint32_t,
+        readWriteMod::Read_write,
+        memAddress::io_registers,
+        mask::Display_control
+        >;
     using Display_status = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_write, memAddress::io_registers + 0x0004>;
     using Vertical_count = Mem_mapped_reg<std::uint16_t, readWriteMod::Read_only, memAddress::io_registers + 0x0006>;
 

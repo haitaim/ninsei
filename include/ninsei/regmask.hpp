@@ -18,8 +18,8 @@ namespace mask {
     
     class Display_control : public Register_mask {
     public:
-        consteval Display_control() : bitmask { 0 } {}
-        consteval Display_control(std::uint32_t input_mask) : bitmask { input_mask } {}
+        Display_control() : bitmask { 0 } {}
+        Display_control(std::uint32_t input_mask) : bitmask { input_mask } {}
         
         template <unsigned mode> requires (mode >= 0 && mode <= 3)
         void set_mode() {

@@ -71,6 +71,9 @@ namespace mask {
             bitmask &= 0xFF;
             bitmask |= (value << 8);
         }
+        std::uint16_t raw_bitmask() {
+            return bitmask;
+        }
         
     private:
         std::uint16_t bitmask;

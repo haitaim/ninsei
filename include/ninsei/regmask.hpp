@@ -1,3 +1,6 @@
+// regmask.hpp
+//
+// Implements bitmask helper objects to be used for their respective registers
 #ifndef NINSEI_REG_MASK_HPP
 #define NINSEI_REG_MASK_HPP
 
@@ -7,7 +10,7 @@
 namespace ninsei::reg {
 namespace mask {
     template<typename Reg_size>
-    inline Reg_size enable_bit(Reg_size bitmask, const unsigned int bit_position, bool enable) {
+    inline Reg_size enable_bit(Reg_size bitmask, const unsigned bit_position, bool enable) {
         if (enable) {
             bitmask |= (1 << bit_position);
         } else {

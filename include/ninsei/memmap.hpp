@@ -1,3 +1,6 @@
+// memmap.hpp
+//
+// GBA memory location constants
 #ifndef NINSEI_MEM_MAP_HPP
 #define NINSEI_MEM_MAP_HPP
 

@@ -21,6 +21,7 @@ namespace readWriteMod {
     concept WriteAccess = std::derived_from<T, Write_only>;
 }
 namespace mask {
+    // Register mask tag
     class Register_mask {};
     template <typename T>
     concept ValidBitmask = std::derived_from<T, Register_mask>;

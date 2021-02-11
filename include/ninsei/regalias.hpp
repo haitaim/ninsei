@@ -1,3 +1,6 @@
+// regalias.hpp
+//
+// Contains typedefs for GBA io registers
 #ifndef NINSEI_REG_ALIAS_HPP
 #define NINSEI_REG_ALIAS_HPP
 
@@ -8,6 +11,7 @@
 
 namespace ninsei::reg {
 namespace lcd {
+    // General display registers
     using Display_control = Mem_mapped_reg<
         std::uint32_t,
         readWriteMod::Read_write,
@@ -26,6 +30,7 @@ namespace lcd {
         memAddress::io_registers + 0x0006
         >;
 
+    // Background registers
     template <unsigned bg_num> requires (bg_num >= 0 && bg_num <= 3)
     using Background_control = Mem_mapped_reg<
         std::uint16_t,
@@ -58,7 +63,8 @@ namespace lcd {
         readWriteMod::Write_only,
         memAddress::io_registers + 0x0028  + ((bg_num - 2) * 0x10) + ((variable - 'x') * 4)
         >;
-
+    
+    // Window registers
     template <unsigned window_num> requires (window_num == 0 || window_num == 1)
     using Window_horizontal_dimension = Mem_mapped_reg<
         std::uint16_t,
@@ -71,7 +77,6 @@ namespace lcd {
         readWriteMod::Write_only,
         memAddress::io_registers + 0x0044 + (window_num * 2)
         >;
-
     using Inside_windows = Mem_mapped_reg<
         std::uint16_t,
         readWriteMod::Read_write,
@@ -82,6 +87,8 @@ namespace lcd {
         readWriteMod::Read_write,
         memAddress::io_registers + 0x004A
         >;
+
+    // Other lcd registers
     using Mosaic_size = Mem_mapped_reg<
         std::uint16_t,
         readWriteMod::Write_only,

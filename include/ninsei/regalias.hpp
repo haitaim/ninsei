@@ -49,19 +49,23 @@ namespace lcd {
         readWriteMod::Write_only,
         memAddress::io_registers + 0x0012 + (4 * bg_num)
         >;
-    template <unsigned bg_num, char parameter>
-    requires ((bg_num == 2 || bg_num == 3) && (parameter >= 'A' && parameter <= 'D'))
+    
+    enum class Matrix_parameter {A, B, C, D};
+    template <unsigned bg_num, Matrix_parameter parameter>
+    requires (bg_num == 2 || bg_num == 3)
     using Background_rotation_scaling = Mem_mapped_reg<
         std::uint16_t,
         readWriteMod::Write_only,
-        memAddress::io_registers + 0x0020 + ((bg_num - 2) * 0x10) + ((parameter - 'A') * 2)
+        memAddress::io_registers + 0x0020 + ((bg_num - 2) * 0x10) + (static_cast<int>(parameter) * 2)
         >;
-    template <unsigned bg_num, char variable>
-    requires ((bg_num == 2 || bg_num == 3) && (variable == 'x' || variable == 'y'))
+
+    enum class Ref_point_variable {x, y};
+    template <unsigned bg_num, Ref_point_variable variable>
+    requires (bg_num == 2 || bg_num == 3)
     using Background_reference_point = Mem_mapped_reg<
         std::uint32_t,
         readWriteMod::Write_only,
-        memAddress::io_registers + 0x0028  + ((bg_num - 2) * 0x10) + ((variable - 'x') * 4)
+        memAddress::io_registers + 0x0028  + ((bg_num - 2) * 0x10) + (static_cast<int>(variable) * 4)
         >;
     
     // Window registers

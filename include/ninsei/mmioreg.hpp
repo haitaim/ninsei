@@ -27,7 +27,7 @@ namespace mask {
     concept ValidBitmask = std::derived_from<T, Register_mask>;
 }
 
-template <std::unsigned_integral Reg_size, typename Reg_access, unsigned address, mask::ValidBitmask Reg_mask = mask::Register_mask>
+template <typename Reg_size, typename Reg_access, unsigned address, mask::ValidBitmask Reg_mask = mask::Register_mask>
 class Mem_mapped_reg {
 public:
     [[nodiscard("Unused volatile read")]]

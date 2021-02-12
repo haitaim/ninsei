@@ -35,7 +35,8 @@ namespace mask {
         void oam_hblank_access(bool enable) {
             bitmask = enable_bit(bitmask, 5, enable);
         }
-        void object_mapping_mode(bool mode) {
+        template <unsigned mode> requires ((mode == 0) || (mode == 1))
+        void object_mapping_mode() {
             bitmask = enable_bit(bitmask, 6, mode);
         }
         void force_blank(bool enable) {

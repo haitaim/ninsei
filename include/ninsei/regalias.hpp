@@ -49,7 +49,7 @@ namespace lcd {
         readWriteMod::Write_only,
         memAddress::io_registers + 0x0012 + (4 * bg_num)
         >;
-    
+
     enum class Matrix_parameter {A, B, C, D};
     template <unsigned bg_num, Matrix_parameter parameter>
     requires (bg_num == 2 || bg_num == 3)
@@ -67,7 +67,7 @@ namespace lcd {
         readWriteMod::Write_only,
         memAddress::io_registers + 0x0028  + ((bg_num - 2) * 0x10) + (static_cast<int>(variable) * 4)
         >;
-    
+
     // Window registers
     template <unsigned window_num> requires (window_num == 0 || window_num == 1)
     using Window_horizontal_dimension = Mem_mapped_reg<

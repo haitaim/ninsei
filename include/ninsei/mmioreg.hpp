@@ -38,7 +38,7 @@ public:
     static inline void write(Reg_size bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
         *reinterpret_cast<volatile Reg_size*>(address) = bitmask;
     }
-    
+
     static inline void write(Reg_mask bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
         *reinterpret_cast<volatile Reg_size*>(address) = bitmask.raw_bitmask();
     }

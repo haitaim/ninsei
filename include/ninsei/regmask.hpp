@@ -18,12 +18,12 @@ namespace mask {
         }
         return bitmask;
     }
-    
+
     class Display_control : public Register_mask {
     public:
         Display_control() : bitmask { 0 } {}
         Display_control(std::uint32_t input_mask) : bitmask { input_mask } {}
-        
+
         template <unsigned mode> requires (mode >= 0 && mode <= 5)
         void set_mode() {
             bitmask &= ~(3);
@@ -60,12 +60,12 @@ namespace mask {
     private:
         std::uint32_t bitmask;
     };
-    
+
     class Display_status : public Register_mask {
     public:
         Display_status() : bitmask { 0 } {}
         Display_status(std::uint16_t input_mask) : bitmask { input_mask } {}
-        
+
         void vblank_interrupt(bool enable) {
             bitmask = enable_bit(bitmask, 3, enable);
         }
@@ -82,7 +82,7 @@ namespace mask {
         std::uint16_t raw_bitmask() {
             return bitmask;
         }
-        
+
     private:
         std::uint16_t bitmask;
     };

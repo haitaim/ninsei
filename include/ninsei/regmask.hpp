@@ -37,7 +37,11 @@ namespace mask {
         }
         template <unsigned mode> requires ((mode == 0) || (mode == 1))
         void object_mapping_mode() {
-            bitmask = enable_bit(bitmask, 6, mode);
+            if (mode == 1) {
+                bitmask |= (1 << 6);
+            } else {
+                bitmask &= ~(1 << 6);
+            }
         }
         void force_blank(bool enable) {
             bitmask = enable_bit(bitmask, 7, enable);

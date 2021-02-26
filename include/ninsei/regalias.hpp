@@ -1,29 +1,99 @@
 // regalias.hpp
 //
-// Contains typedefs for GBA io registers
+// Contains typedefs and interfaces for GBA io registers
 #ifndef NINSEI_REG_ALIAS_HPP
 #define NINSEI_REG_ALIAS_HPP
 
 #include "memmap.hpp"
 #include "mmioreg.hpp"
-#include "regmask.hpp"
 #include <cstdint>
 
 namespace ninsei::reg {
+    template<typename Reg_size>
+    inline Reg_size enable_bit(Reg_size bitmask, const unsigned bit_position, bool enable) {
+        if (enable) {
+            bitmask |= (1 << bit_position);
+        } else {
+            bitmask &= ~(1 << bit_position);
+        }
+        return bitmask;
+    }
 namespace lcd {
     // General display registers
-    using Display_control = Mem_mapped_reg<
+    class Display_control : public Interface_reg<
         std::uint32_t,
         readWriteMod::Read_write,
-        memAddress::io_registers,
-        mask::Display_control
-        >;
-    using Display_status = Mem_mapped_reg<
+        memAddress::io_registers
+        > {
+    public:
+        constexpr Display_control(): Interface_reg{} {}
+
+        template <unsigned mode>
+        Display_control& set_mode() {
+            static_assert(mode >= 0 && mode <= 5, "Invalid display mode number");
+            internal_bitmask &= ~(3);
+            internal_bitmask |= mode;
+            return *this;
+        }
+        Display_control& swap_page() {
+            internal_bitmask ^= (1 << 4);
+            return *this;
+        }
+        Display_control& oam_hblank_access(bool enable) {
+            internal_bitmask = enable_bit(internal_bitmask, 5, enable);
+            return *this;
+        }
+        template <unsigned mode>
+        Display_control& object_mapping_mode() {
+            static_assert(mode == 0 || mode == 1, "Invalid object mapping mode number");
+            if (mode == 1) {
+                internal_bitmask |= (1 << 6);
+            } else {
+                internal_bitmask &= ~(1 << 6);
+            }
+            return *this;
+        }
+        Display_control& force_blank(bool enable) {
+            internal_bitmask = enable_bit(internal_bitmask, 7, enable);
+            return *this;
+        }
+        template <unsigned bg_num>
+        Display_control& enable_background(bool enable) {
+            static_assert(bg_num >= 0 && bg_num <= 3, "Invalid background number");
+            internal_bitmask = enable_bit(internal_bitmask, 8 + bg_num, enable);
+            return *this;
+        }
+        Display_control& enable_obj_background(bool enable) {
+            internal_bitmask = enable_bit(internal_bitmask, 0xC, enable);
+            return *this;
+        }
+    };
+    class Display_status : public Interface_reg<
         std::uint16_t,
         readWriteMod::Read_write,
-        memAddress::io_registers + 0x0004,
-        mask::Display_status
-        >;
+        memAddress::io_registers + 0x0004
+        > {
+    public:
+        constexpr Display_status(): Interface_reg{} {}
+
+        Display_status& vblank_interrupt(bool enable) {
+            internal_bitmask = enable_bit(internal_bitmask, 3, enable);
+            return *this;
+        }
+        Display_status& hblank_interrupt(bool enable) {
+            internal_bitmask = enable_bit(internal_bitmask, 4, enable);
+            return *this;
+        }
+        Display_status& vertical_count_interrupt(bool enable) {
+            internal_bitmask = enable_bit(internal_bitmask, 5, enable);
+            return *this;
+        }
+        Display_status& set_vertical_count_trigger(std::uint8_t value) {
+            internal_bitmask &= 0xFF;
+            internal_bitmask |= (value << 8);
+            return *this;
+        }
+    };
     using Vertical_count = Mem_mapped_reg<
         std::uint16_t,
         readWriteMod::Read_only,

@@ -4,7 +4,6 @@
 #include "memmap.hpp"
 
 #include "mmioreg.hpp"
-#include "regmask.hpp"
 #include "regalias.hpp"
 
 #endif // NINSEI_GBA_LIB_HPP

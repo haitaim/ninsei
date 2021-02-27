@@ -1,6 +1,6 @@
 // mmioreg.hpp
 //
-// Implements general register class which includes read/write protection, and
+// Implements general register class which includes read/write protection and
 // basic class to be inherited by registers with an interface
 #ifndef NINSEI_MMIO_REG_HPP
 #define NINSEI_MMIO_REG_HPP

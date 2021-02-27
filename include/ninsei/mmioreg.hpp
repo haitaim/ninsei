@@ -25,7 +25,7 @@ namespace readWriteMod {
 template <typename Reg_size, typename Reg_access, unsigned address>
 class Mem_mapped_reg {
 public:
-    constexpr Mem_mapped_reg() = default;
+    constexpr Mem_mapped_reg() {}
 
     [[nodiscard("Unused volatile read")]]
     Reg_size read() noexcept requires readWriteMod::ReadAccess<Reg_access> {

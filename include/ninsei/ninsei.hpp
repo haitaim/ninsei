@@ -6,4 +6,7 @@
 #include "mmioreg.hpp"
 #include "regdef.hpp"
 
+#include "video.hpp"
+#include "bitmap.hpp"
+
 #endif // NINSEI_GBA_LIB_HPP

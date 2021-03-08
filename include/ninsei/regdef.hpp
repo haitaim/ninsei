@@ -38,8 +38,7 @@ namespace lcd {
         }
 
         enum class Object_mapping_mode { matrix, array };
-        template <Object_mapping_mode mode>
-        Display_control& set_object_mapping_mode() noexcept {
+        Display_control& set_object_mapping_mode(Object_mapping_mode mode) noexcept {
             if (mode == Object_mapping_mode::array) {
                 internal_bitmask |= (1 << 6);
             } else {

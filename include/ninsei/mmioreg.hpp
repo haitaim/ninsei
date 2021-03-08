@@ -25,14 +25,14 @@ namespace readWriteMod {
 template <typename Reg_size, typename Reg_access, unsigned address>
 class Mem_mapped_reg {
 public:
-    constexpr Mem_mapped_reg() {}
+    constexpr Mem_mapped_reg() noexcept {}
 
     [[nodiscard("Unused volatile read")]]
-    Reg_size read() noexcept requires readWriteMod::ReadAccess<Reg_access> {
+    Reg_size read() const noexcept requires readWriteMod::ReadAccess<Reg_access> {
         return *reinterpret_cast<volatile Reg_size*>(address);
     }
 
-    void write(Reg_size bitmask) noexcept requires readWriteMod::WriteAccess<Reg_access> {
+    void write(Reg_size bitmask) const noexcept requires readWriteMod::WriteAccess<Reg_access> {
         *reinterpret_cast<volatile Reg_size*>(address) = bitmask;
     }
 
@@ -49,7 +49,17 @@ public:
         *reinterpret_cast<volatile Reg_size*>(address) = internal_bitmask;
     }
 protected:
-    constexpr Interface_reg(): internal_bitmask {0} {}
+    constexpr Interface_reg() noexcept : internal_bitmask { 0 } {}
+
+    static inline Reg_size enable_bit(Reg_size bitmask, const unsigned bit_position, bool enable) noexcept {
+        if (enable) {
+            bitmask |= (1 << bit_position);
+        } else {
+            bitmask &= ~(1 << bit_position);
+        }
+        return bitmask;
+    }
+
     Reg_size internal_bitmask;
 };
 }

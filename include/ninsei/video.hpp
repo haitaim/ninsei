@@ -4,7 +4,6 @@
 #include "regdef.hpp"
 #include <cstdint>
 
-using Colour15 = std::uint16_t;
 
 namespace ninsei::video {
 namespace lcd {
@@ -14,7 +13,7 @@ namespace lcd {
     inline constexpr std::uint32_t vertical_blank = 68;
 }
 
-inline void simple_vsync() {
+inline void vertical_sync() noexcept {
     reg::lcd::Vertical_count count;
     // Finish remaining vertical blank cycles
     while (count.read() >= lcd::height);
@@ -22,7 +21,9 @@ inline void simple_vsync() {
     while (count.read() < lcd::height);
 }
 
-constexpr Colour15 rgb_conversion(std::uint32_t red, std::uint32_t green, std::uint32_t blue) {
+using Colour15 = std::uint16_t;
+
+constexpr Colour15 rgb_conversion(std::uint32_t red, std::uint32_t green, std::uint32_t blue) noexcept {
     return red | (green << 5) | (blue << 10);
 }
 

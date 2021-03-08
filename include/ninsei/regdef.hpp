@@ -9,16 +9,6 @@
 #include <cstdint>
 
 namespace ninsei::reg {
-    template<typename Reg_size>
-    inline Reg_size enable_bit(Reg_size bitmask, const unsigned bit_position, bool enable) {
-        if (enable) {
-            bitmask |= (1 << bit_position);
-        } else {
-            bitmask &= ~(1 << bit_position);
-        }
-        return bitmask;
-    }
-
 namespace lcd {
     // General display registers
     class Display_control : public Interface_reg<
@@ -27,25 +17,25 @@ namespace lcd {
         memAddress::io_registers
     > {
     public:
-        constexpr Display_control(): Interface_reg{} {}
+        constexpr Display_control() noexcept : Interface_reg {} {}
 
         template <unsigned mode>
-        Display_control& set_mode() {
+        Display_control& set_mode() noexcept {
             static_assert(mode >= 0 && mode <= 5, "Invalid display mode number");
             internal_bitmask &= ~(3);
             internal_bitmask |= mode;
             return *this;
         }
-        Display_control& swap_page() {
+        Display_control& swap_page() noexcept {
             internal_bitmask ^= (1 << 4);
             return *this;
         }
-        Display_control& oam_hblank_access(bool enable) {
+        Display_control& oam_hblank_access(bool enable) noexcept {
             internal_bitmask = enable_bit(internal_bitmask, 5, enable);
             return *this;
         }
         template <unsigned mode>
-        Display_control& object_mapping_mode() {
+        Display_control& object_mapping_mode() noexcept {
             static_assert(mode == 0 || mode == 1, "Invalid object mapping mode number");
             if (mode == 1) {
                 internal_bitmask |= (1 << 6);
@@ -54,17 +44,17 @@ namespace lcd {
             }
             return *this;
         }
-        Display_control& force_blank(bool enable) {
+        Display_control& force_blank(bool enable) noexcept {
             internal_bitmask = enable_bit(internal_bitmask, 7, enable);
             return *this;
         }
         template <unsigned bg_num>
-        Display_control& enable_background(bool enable) {
+        Display_control& enable_background(bool enable) noexcept {
             static_assert(bg_num >= 0 && bg_num <= 3, "Invalid background number");
             internal_bitmask = enable_bit(internal_bitmask, 8 + bg_num, enable);
             return *this;
         }
-        Display_control& enable_obj_background(bool enable) {
+        Display_control& enable_obj_background(bool enable) noexcept {
             internal_bitmask = enable_bit(internal_bitmask, 0xC, enable);
             return *this;
         }
@@ -75,21 +65,21 @@ namespace lcd {
         memAddress::io_registers + 0x0004
     > {
     public:
-        constexpr Display_status(): Interface_reg{} {}
+        constexpr Display_status() noexcept : Interface_reg {} {}
 
-        Display_status& vblank_interrupt(bool enable) {
+        Display_status& vblank_interrupt(bool enable) noexcept {
             internal_bitmask = enable_bit(internal_bitmask, 3, enable);
             return *this;
         }
-        Display_status& hblank_interrupt(bool enable) {
+        Display_status& hblank_interrupt(bool enable) noexcept {
             internal_bitmask = enable_bit(internal_bitmask, 4, enable);
             return *this;
         }
-        Display_status& vertical_count_interrupt(bool enable) {
+        Display_status& vertical_count_interrupt(bool enable) noexcept {
             internal_bitmask = enable_bit(internal_bitmask, 5, enable);
             return *this;
         }
-        Display_status& set_vertical_count_trigger(std::uint8_t value) {
+        Display_status& set_vertical_count_trigger(std::uint8_t value) noexcept {
             internal_bitmask &= 0xFF;
             internal_bitmask |= (value << 8);
             return *this;
@@ -121,7 +111,7 @@ namespace lcd {
         memAddress::io_registers + 0x0012 + (4 * bg_num)
     >;
 
-    enum class Matrix_parameter {A, B, C, D};
+    enum class Matrix_parameter { A, B, C, D };
     template <unsigned bg_num, Matrix_parameter parameter>
     requires (bg_num == 2 || bg_num == 3)
     using Background_rotation_scaling = Mem_mapped_reg<
@@ -130,8 +120,8 @@ namespace lcd {
         memAddress::io_registers + 0x0020 + ((bg_num - 2) * 0x10) + (static_cast<int>(parameter) * 2)
     >;
 
-    enum class Ref_point_variable {x, y};
-    template <unsigned bg_num, Ref_point_variable variable>
+    enum class Reference_point_variable { x, y };
+    template <unsigned bg_num, Reference_point_variable variable>
     requires (bg_num == 2 || bg_num == 3)
     using Background_reference_point = Mem_mapped_reg<
         std::uint32_t,

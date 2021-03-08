@@ -46,21 +46,21 @@ public:
     [[nodiscard("Unused key check")]] inline bool is_hit(Key_mask first, Key_masks... rest) {
         static_assert(std::conjunction_v<std::is_same<Key_mask, Key_masks>...>, "Only key masks accepted");
         std::uint32_t key_mask = make_mask(first, rest...);
-        return (current_key & ~previous_key) == key_mask;
+        return (current_key & ~previous_key & key_mask) == key_mask;
     }
 
     template <typename... Key_masks>
     [[nodiscard("Unused key check")]] inline bool is_held(Key_mask first, Key_masks... rest) {
         static_assert(std::conjunction_v<std::is_same<Key_mask, Key_masks>...>, "Only key masks accepted");
         std::uint32_t key_mask = make_mask(first, rest...);
-        return (current_key & previous_key) == key_mask;
+        return (current_key & previous_key & key_mask) == key_mask;
     }
 
     template <typename... Key_masks>
     [[nodiscard("Unused key check")]] inline bool is_released(Key_mask first, Key_masks... rest) {
         static_assert(std::conjunction_v<std::is_same<Key_mask, Key_masks>...>, "Only key masks accepted");
         std::uint32_t key_mask = make_mask(first, rest...);
-        return (~current_key & previous_key) == key_mask;
+        return (~current_key & previous_key & key_mask) == key_mask;
     }
 
     Keypad(const Keypad&) = delete;

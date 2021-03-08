@@ -9,4 +9,6 @@
 #include "video.hpp"
 #include "bitmap.hpp"
 
+#include "keypad.hpp"
+
 #endif // NINSEI_GBA_LIB_HPP

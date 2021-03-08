@@ -43,7 +43,7 @@ namespace mode3 {
 
     inline void fill(Colour15 colour) noexcept {
         std::uint32_t word_length_colours = colour | (colour << 16);
-        for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) >> 1); ++i) {
+        for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) / 2); ++i) {
             reinterpret_cast<volatile std::uint32_t*>(memAddress::video_ram)[i] = word_length_colours;
         }
     }
@@ -56,7 +56,7 @@ namespace mode4 {
             | (palette_num << 24);
 
         const std::uint32_t frame_address = memAddress::video_ram + frame_offset(frame_number);
-        for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) >> 1); ++i) {
+        for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) / 2); ++i) {
             reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_palettes;
         }
     }
@@ -100,7 +100,7 @@ namespace mode5 {
     inline void fill(Colour15 colour, std::uint32_t frame_number = 0) noexcept {
         std::uint32_t word_length_colours = colour | (colour << 16);
         const std::uint32_t frame_address = memAddress::video_ram + frame_offset(frame_number);
-        for (std::uint32_t i = 0; i < ((mode5::lcd::width * mode5::lcd::height) >> 1); ++i) {
+        for (std::uint32_t i = 0; i < ((mode5::lcd::width * mode5::lcd::height) / 2); ++i) {
             reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_colours;
         }
     }

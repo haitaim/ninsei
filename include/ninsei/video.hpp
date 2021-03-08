@@ -1,3 +1,6 @@
+// video.hpp
+//
+// Includes miscellaneous functions and constants related to video output
 #ifndef NINSEI_VIDEO_HPP
 #define NINSEI_VIDEO_HPP
 

@@ -1,3 +1,7 @@
+// bitmap.hpp
+//
+// Contains basic functions for GBA bitmap modes such as displaying individual
+// pixels and rectangles
 #ifndef NINSEI_BITMAP_HPP
 #define NINSEI_BITMAP_HPP
 
@@ -47,14 +51,13 @@ namespace mode3 {
 namespace mode4 {
     inline void fill(std::uint32_t palette_num, std::uint32_t frame_number = 0) noexcept {
         std::uint32_t word_length_palettes = palette_num
-        | (palette_num << 8)
-        | (palette_num << 16)
-        | (palette_num << 24);
+            | (palette_num << 8)
+            | (palette_num << 16)
+            | (palette_num << 24);
 
+        const std::uint32_t frame_address = memAddress::video_ram + frame_offset(frame_number);
         for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) >> 1); ++i) {
-            reinterpret_cast<volatile std::uint32_t*>(
-                memAddress::video_ram + frame_offset(frame_number)
-            )[i] = word_length_palettes;
+            reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_palettes;
         }
     }
 }
@@ -69,9 +72,8 @@ namespace mode5 {
         Colour15 colour,
         std::uint32_t frame_number = 0
     ) noexcept {
-        reinterpret_cast<volatile Colour15*>(
-            memAddress::video_ram + frame_offset(frame_number)
-        )[y * lcd::width + x] = colour;
+        const std::uint32_t frame_address = memAddress::video_ram + frame_offset(frame_number);
+        reinterpret_cast<volatile Colour15*>(frame_address)[y * lcd::width + x] = colour;
     }
 
     inline void rectangle(
@@ -97,10 +99,9 @@ namespace mode5 {
 
     inline void fill(Colour15 colour, std::uint32_t frame_number = 0) noexcept {
         std::uint32_t word_length_colours = colour | (colour << 16);
+        const std::uint32_t frame_address = memAddress::video_ram + frame_offset(frame_number);
         for (std::uint32_t i = 0; i < ((mode5::lcd::width * mode5::lcd::height) >> 1); ++i) {
-            reinterpret_cast<volatile std::uint32_t*>(
-                memAddress::video_ram + frame_offset(frame_number)
-            )[i] = word_length_colours;
+            reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_colours;
         }
     }
 }

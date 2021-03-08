@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <concepts>
-#include <type_traits>
 
 namespace ninsei::reg {
 namespace readWriteMod {
@@ -45,22 +44,21 @@ public:
 template <typename Reg_size, typename Reg_access, unsigned address>
 class Interface_reg : public Mem_mapped_reg<Reg_size, Reg_access, address> {
 public:
-    void write() noexcept {
+    void write() const noexcept {
         *reinterpret_cast<volatile Reg_size*>(address) = internal_bitmask;
     }
 protected:
     constexpr Interface_reg() noexcept : internal_bitmask { 0 } {}
 
-    static inline Reg_size enable_bit(Reg_size bitmask, const unsigned bit_position, bool enable) noexcept {
-        if (enable) {
-            bitmask |= (1 << bit_position);
-        } else {
-            bitmask &= ~(1 << bit_position);
-        }
-        return bitmask;
-    }
-
     Reg_size internal_bitmask;
+
+    void enable_bit(unsigned bit_position, bool enable) noexcept {
+        if (enable) {
+            internal_bitmask |= (1 << bit_position);
+        } else {
+            internal_bitmask &= ~(1 << bit_position);
+        }
+    }
 };
 }
 

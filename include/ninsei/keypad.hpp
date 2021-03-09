@@ -71,6 +71,16 @@ public:
         return (~current_key & previous_key & key_mask) == key_mask;
     }
 
+    [[nodiscard("Unused key check")]]
+    inline std::int32_t horizontal_direction() const noexcept {
+        return ((current_key >> 4) & 1) - ((current_key >> 5) & 1);
+    }
+
+    [[nodiscard("Unused key check")]]
+    inline std::int32_t vertical_direction() const noexcept {
+        return ((current_key >> 7) & 1) - ((current_key >> 6) & 1);
+    }
+
     Keypad(const Keypad&) = delete;
     Keypad(Keypad&&) = delete;
     Keypad& operator=(const Keypad&) = delete;

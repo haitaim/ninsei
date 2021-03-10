@@ -9,22 +9,22 @@
 #include <type_traits>
 
 namespace ninsei {
+enum class Key_mask : std::uint32_t {
+    a_button = 1,
+    b_button = 1 << 1,
+    select = 1 << 2,
+    start = 1 << 3,
+    right = 1 << 4,
+    left = 1 << 5,
+    up = 1 << 6,
+    down = 1 << 7,
+    right_shoulder = 1 << 8,
+    left_shoulder = 1 << 9
+};
+
 class Keypad {
 public:
     constexpr Keypad() noexcept {}
-
-    enum class Key_mask : std::uint32_t {
-        a_button = 1,
-        b_button = 1 << 1,
-        select = 1 << 2,
-        start = 1 << 3,
-        right = 1 << 4,
-        left = 1 << 5,
-        up = 1 << 6,
-        down = 1 << 7,
-        right_shoulder = 1 << 8,
-        left_shoulder = 1 << 9
-    };
 
     inline void poll() const noexcept {
         previous_key = current_key;

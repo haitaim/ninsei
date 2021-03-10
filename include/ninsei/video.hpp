@@ -7,8 +7,8 @@
 #include "regdef.hpp"
 #include <cstdint>
 
-
-namespace ninsei::video {
+namespace ninsei {
+namespace video {
 namespace lcd {
     inline constexpr std::uint32_t width = 240;
     inline constexpr std::uint32_t height = 160;
@@ -23,14 +23,14 @@ inline void vertical_sync() noexcept {
     // Wait for beginning of new vertical blank period
     while (count.read() < lcd::height);
 }
-
-using Colour15 = std::uint16_t;
-
-constexpr Colour15 rgb_conversion(std::uint32_t red, std::uint32_t green, std::uint32_t blue) noexcept {
-    return red | (green << 5) | (blue << 10);
 }
 
-namespace colourConst {
+using Colour15 = std::uint16_t;
+namespace colour {
+    constexpr Colour15 rgb_conversion(std::uint32_t red, std::uint32_t green, std::uint32_t blue) noexcept {
+        return red | (green << 5) | (blue << 10);
+    }
+
     inline constexpr Colour15 black = 0x0000;
     inline constexpr Colour15 white = 0x7FFF;
 

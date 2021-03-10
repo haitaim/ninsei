@@ -10,8 +10,6 @@
 #include <cstdint>
 
 namespace ninsei {
-using video::Colour15;
-
 namespace bitmapHelper {
     constexpr std::uint32_t frame_offset(std::uint32_t frame_number) noexcept {
         return (frame_number & 1) * 0xA000;

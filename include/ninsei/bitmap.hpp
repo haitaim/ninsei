@@ -25,7 +25,7 @@ template <>
 class bitmap<3> {
 public:
     static inline void plot(std::uint32_t x, std::uint32_t y, Colour15 colour) noexcept {
-        reinterpret_cast<volatile Colour15*>(memAddress::video_ram)[y * video::lcd::width + x] = colour;
+        reinterpret_cast<volatile Colour15*>(address::video_ram)[y * video::lcd::width + x] = colour;
     }
 
     static inline void rectangle(
@@ -38,7 +38,7 @@ public:
         std::uint32_t length = right_x - left_x;
         std::uint32_t height = bottom_y - top_y;
         auto upper_left = reinterpret_cast<volatile Colour15*>(
-            memAddress::video_ram + (((top_y * video::lcd::width) + left_x) * 2)
+            address::video_ram + (((top_y * video::lcd::width) + left_x) * 2)
         );
 
         for (std::uint32_t i = 0; i < height; ++i) {
@@ -51,7 +51,7 @@ public:
     static inline void fill(Colour15 colour) noexcept {
         std::uint32_t word_length_colours = colour | (colour << 16);
         for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) / 2); ++i) {
-            reinterpret_cast<volatile std::uint32_t*>(memAddress::video_ram)[i] = word_length_colours;
+            reinterpret_cast<volatile std::uint32_t*>(address::video_ram)[i] = word_length_colours;
         }
     }
 
@@ -67,7 +67,7 @@ public:
             | (palette_num << 16)
             | (palette_num << 24);
 
-        const std::uint32_t frame_address = memAddress::video_ram
+        const std::uint32_t frame_address = address::video_ram
             + bitmapHelper::frame_offset(frame_number);
         for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) / 2); ++i) {
             reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_palettes;
@@ -88,7 +88,7 @@ public:
         Colour15 colour,
         std::uint32_t frame_number = 0
     ) noexcept {
-        const std::uint32_t frame_address = memAddress::video_ram + bitmapHelper::frame_offset(frame_number);
+        const std::uint32_t frame_address = address::video_ram + bitmapHelper::frame_offset(frame_number);
         reinterpret_cast<volatile Colour15*>(frame_address)[y * width + x] = colour;
     }
 
@@ -103,7 +103,7 @@ public:
         std::uint32_t length = right_x - left_x;
         std::uint32_t height = bottom_y - top_y;
         auto upper_left = reinterpret_cast<volatile Colour15*>(
-            memAddress::video_ram
+            address::video_ram
             + bitmapHelper::frame_offset(frame_number)
             + (((top_y * width) + left_x) * 2)
         );
@@ -117,7 +117,7 @@ public:
 
     static inline void fill(Colour15 colour, std::uint32_t frame_number = 0) noexcept {
         std::uint32_t word_length_colours = colour | (colour << 16);
-        const std::uint32_t frame_address = memAddress::video_ram
+        const std::uint32_t frame_address = address::video_ram
             + bitmapHelper::frame_offset(frame_number);
         for (std::uint32_t i = 0; i < ((width * height) / 2); ++i) {
             reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_colours;

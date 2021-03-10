@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace ninsei::memAddress {
+namespace ninsei::address {
     inline constexpr std::uint32_t external_work_ram = 0x0200'0000;
     inline constexpr std::uint32_t internal_work_ram = 0x0300'0000;
     inline constexpr std::uint32_t io_registers = 0x0400'0000;

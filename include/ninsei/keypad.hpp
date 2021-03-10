@@ -22,6 +22,9 @@ enum class Key_mask : std::uint32_t {
     left_shoulder = 1 << 9
 };
 
+template <typename... Key_masks>
+concept AreKeyMasks = std::conjunction_v<std::is_same<Key_mask, Key_masks>...>;
+
 class Keypad {
 public:
     constexpr Keypad() noexcept {}
@@ -31,42 +34,37 @@ public:
         current_key = ~reg::keypad::Status().read() & 0x03FF;
     }
 
-    template <typename... Key_masks>
+    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
     inline bool is_down(Key_mask first, Key_masks... rest) const noexcept {
-        static_assert(std::conjunction_v<std::is_same<Key_mask, Key_masks>...>, "Only key masks accepted");
         std::uint32_t key_mask = make_mask(first, rest...);
         return (key_mask & current_key) == key_mask;
     }
 
-    template <typename... Key_masks>
+    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
     inline bool was_down(Key_mask first, Key_masks... rest) const noexcept {
-        static_assert(std::conjunction_v<std::is_same<Key_mask, Key_masks>...>, "Only key masks accepted");
         std::uint32_t key_mask = make_mask(first, rest...);
         return (key_mask & previous_key) == key_mask;
     }
 
-    template <typename... Key_masks>
+    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
     inline bool is_hit(Key_mask first, Key_masks... rest) const noexcept {
-        static_assert(std::conjunction_v<std::is_same<Key_mask, Key_masks>...>, "Only key masks accepted");
         std::uint32_t key_mask = make_mask(first, rest...);
         return (current_key & ~previous_key & key_mask) == key_mask;
     }
 
-    template <typename... Key_masks>
+    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
     inline bool is_held(Key_mask first, Key_masks... rest) const noexcept {
-        static_assert(std::conjunction_v<std::is_same<Key_mask, Key_masks>...>, "Only key masks accepted");
         std::uint32_t key_mask = make_mask(first, rest...);
         return (current_key & previous_key & key_mask) == key_mask;
     }
 
-    template <typename... Key_masks>
+    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
     inline bool is_released(Key_mask first, Key_masks... rest) const noexcept {
-        static_assert(std::conjunction_v<std::is_same<Key_mask, Key_masks>...>, "Only key masks accepted");
         std::uint32_t key_mask = make_mask(first, rest...);
         return (~current_key & previous_key & key_mask) == key_mask;
     }

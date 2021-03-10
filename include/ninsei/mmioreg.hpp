@@ -44,9 +44,10 @@ public:
 template <typename Reg_size, typename Reg_access, unsigned address>
 class Interface_reg : public Mem_mapped_reg<Reg_size, Reg_access, address> {
 public:
-    void write() const noexcept {
+    void write_buffer() const noexcept {
         *reinterpret_cast<volatile Reg_size*>(address) = internal_bitmask;
     }
+
 protected:
     constexpr Interface_reg() noexcept : internal_bitmask { 0 } {}
 

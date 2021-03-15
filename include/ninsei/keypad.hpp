@@ -6,7 +6,6 @@
 
 #include "regdef.hpp"
 #include <cstdint>
-#include <type_traits>
 
 namespace ninsei {
 enum class Key_mask : std::uint32_t {
@@ -22,60 +21,56 @@ enum class Key_mask : std::uint32_t {
     left_shoulder = 1 << 9
 };
 
-template <typename... Key_masks>
-concept AreKeyMasks = std::conjunction_v<std::is_same<Key_mask, Key_masks>...>;
+constexpr Key_mask operator|(Key_mask lhs, Key_mask rhs) {
+    return static_cast<Key_mask>(static_cast<std::uint32_t>(lhs) | static_cast<std::uint32_t>(rhs));
+}
 
 class Keypad {
 public:
     constexpr Keypad() noexcept {}
 
-    inline void poll() const noexcept {
+    void poll() const noexcept {
         previous_key = current_key;
         current_key = ~reg::keypad::Status().read() & 0x03FF;
     }
 
-    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
-    inline bool is_down(Key_mask first, Key_masks... rest) const noexcept {
-        std::uint32_t key_mask = make_mask(first, rest...);
+    bool is_down(Key_mask mask) const noexcept {
+        const auto key_mask = static_cast<std::uint32_t>(mask);
         return (key_mask & current_key) == key_mask;
     }
 
-    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
-    inline bool was_down(Key_mask first, Key_masks... rest) const noexcept {
-        std::uint32_t key_mask = make_mask(first, rest...);
+    bool was_down(Key_mask mask) const noexcept {
+        const auto key_mask = static_cast<std::uint32_t>(mask);
         return (key_mask & previous_key) == key_mask;
     }
 
-    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
-    inline bool is_hit(Key_mask first, Key_masks... rest) const noexcept {
-        std::uint32_t key_mask = make_mask(first, rest...);
+    bool is_hit(Key_mask mask) const noexcept {
+        const auto key_mask = static_cast<std::uint32_t>(mask);
         return (current_key & ~previous_key & key_mask) == key_mask;
     }
 
-    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
-    inline bool is_held(Key_mask first, Key_masks... rest) const noexcept {
-        std::uint32_t key_mask = make_mask(first, rest...);
+    bool is_held(Key_mask mask) const noexcept {
+        const auto key_mask = static_cast<std::uint32_t>(mask);
         return (current_key & previous_key & key_mask) == key_mask;
     }
 
-    template <AreKeyMasks... Key_masks>
     [[nodiscard("Unused key check")]]
-    inline bool is_released(Key_mask first, Key_masks... rest) const noexcept {
-        std::uint32_t key_mask = make_mask(first, rest...);
+    bool is_released(Key_mask mask) const noexcept {
+        const auto key_mask = static_cast<std::uint32_t>(mask);
         return (~current_key & previous_key & key_mask) == key_mask;
     }
 
     [[nodiscard("Unused key check")]]
-    inline std::int32_t horizontal_direction() const noexcept {
+    std::int32_t horizontal_direction() const noexcept {
         return ((current_key >> 4) & 1) - ((current_key >> 5) & 1);
     }
 
     [[nodiscard("Unused key check")]]
-    inline std::int32_t vertical_direction() const noexcept {
+    std::int32_t vertical_direction() const noexcept {
         return ((current_key >> 7) & 1) - ((current_key >> 6) & 1);
     }
 
@@ -86,15 +81,6 @@ public:
 private:
     static inline std::uint32_t current_key = 0;
     static inline std::uint32_t previous_key = 0;
-
-    static constexpr std::uint32_t make_mask(Key_mask mask) noexcept {
-        return static_cast<std::uint32_t>(mask);
-    }
-
-    template <typename... Key_masks>
-    static constexpr std::uint32_t make_mask(Key_mask first, Key_masks ...rest) noexcept {
-        return static_cast<std::uint32_t>(first) | make_mask(rest...);
-    }
 };
 }
 

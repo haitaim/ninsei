@@ -18,7 +18,7 @@ namespace lcd {
 }
 
 inline void vertical_sync() noexcept {
-    reg::lcd::Vertical_count count;
+    const reg::lcd::Vertical_count count;
     // Finish remaining vertical blank cycles
     while (count.read() >= lcd::height);
     // Wait for beginning of new vertical blank period

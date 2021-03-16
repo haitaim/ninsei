@@ -10,10 +10,9 @@
 #include <cstdint>
 
 namespace ninsei {
-namespace bitmapHelper {
-    constexpr std::uint32_t frame_offset(std::uint32_t frame_number) noexcept {
-        return (frame_number & 1) * 0xA000;
-    }
+// Helper function
+constexpr std::uint32_t frame_offset(std::uint32_t frame_number) noexcept {
+    return (frame_number & 1) * 0xA000;
 }
 
 template <unsigned mode>
@@ -35,8 +34,8 @@ public:
         std::uint32_t bottom_y,
         Colour15 colour
     ) noexcept {
-        std::uint32_t length = right_x - left_x;
-        std::uint32_t height = bottom_y - top_y;
+        const std::uint32_t length = right_x - left_x;
+        const std::uint32_t height = bottom_y - top_y;
         auto upper_left = reinterpret_cast<volatile Colour15*>(
             address::video_ram + (((top_y * video::lcd::width) + left_x) * 2)
         );
@@ -49,7 +48,7 @@ public:
     }
 
     static inline void fill(Colour15 colour) noexcept {
-        std::uint32_t word_length_colours = colour | (colour << 16);
+        const std::uint32_t word_length_colours = colour | (colour << 16);
         for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) / 2); ++i) {
             reinterpret_cast<volatile std::uint32_t*>(address::video_ram)[i] = word_length_colours;
         }
@@ -61,14 +60,29 @@ public:
 template <>
 class bitmap<4> {
 public:
+    static inline void plot(
+        std::uint32_t x,
+        std::uint32_t y,
+        std::uint32_t palette_num,
+        std::uint32_t frame_number = 0
+    ) noexcept {
+        auto two_points =
+            reinterpret_cast<volatile std::uint16_t*>(address::video_ram + frame_offset(frame_number))
+            + ((y * video::lcd::width + x) / 2);
+        if ((x & 1) == 0) {
+            *two_points = (*two_points & ~0xFF) | palette_num;
+        } else {
+            *two_points = (*two_points & 0xFF) | (palette_num << 8);
+        }
+    }
+
     static inline void fill(std::uint32_t palette_num, std::uint32_t frame_number = 0) noexcept {
-        std::uint32_t word_length_palettes = palette_num
+        const std::uint32_t word_length_palettes = palette_num
             | (palette_num << 8)
             | (palette_num << 16)
             | (palette_num << 24);
 
-        const std::uint32_t frame_address = address::video_ram
-            + bitmapHelper::frame_offset(frame_number);
+        const std::uint32_t frame_address = address::video_ram + frame_offset(frame_number);
         for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) / 2); ++i) {
             reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_palettes;
         }
@@ -88,7 +102,7 @@ public:
         Colour15 colour,
         std::uint32_t frame_number = 0
     ) noexcept {
-        const std::uint32_t frame_address = address::video_ram + bitmapHelper::frame_offset(frame_number);
+        const std::uint32_t frame_address = address::video_ram + frame_offset(frame_number);
         reinterpret_cast<volatile Colour15*>(frame_address)[y * width + x] = colour;
     }
 
@@ -100,11 +114,11 @@ public:
         Colour15 colour,
         std::uint32_t frame_number = 0
     ) noexcept {
-        std::uint32_t length = right_x - left_x;
-        std::uint32_t height = bottom_y - top_y;
+        const std::uint32_t length = right_x - left_x;
+        const std::uint32_t height = bottom_y - top_y;
         auto upper_left = reinterpret_cast<volatile Colour15*>(
             address::video_ram
-            + bitmapHelper::frame_offset(frame_number)
+            + frame_offset(frame_number)
             + (((top_y * width) + left_x) * 2)
         );
 
@@ -118,7 +132,7 @@ public:
     static inline void fill(Colour15 colour, std::uint32_t frame_number = 0) noexcept {
         std::uint32_t word_length_colours = colour | (colour << 16);
         const std::uint32_t frame_address = address::video_ram
-            + bitmapHelper::frame_offset(frame_number);
+            + frame_offset(frame_number);
         for (std::uint32_t i = 0; i < ((width * height) / 2); ++i) {
             reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_colours;
         }

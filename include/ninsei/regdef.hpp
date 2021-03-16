@@ -27,7 +27,7 @@ namespace lcd {
             return *this;
         }
 
-        Display_control& swap_page() noexcept {
+        Display_control& flip_page() noexcept {
             internal_bitmask ^= (1 << 4);
             return *this;
         }

@@ -21,7 +21,7 @@ enum class Key_mask : std::uint32_t {
     left_shoulder = 1 << 9
 };
 
-constexpr Key_mask operator|(Key_mask lhs, Key_mask rhs) {
+constexpr Key_mask operator|(Key_mask lhs, Key_mask rhs) noexcept {
     return static_cast<Key_mask>(static_cast<std::uint32_t>(lhs) | static_cast<std::uint32_t>(rhs));
 }
 

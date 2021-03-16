@@ -36,9 +36,8 @@ public:
     ) noexcept {
         const std::uint32_t length = right_x - left_x;
         const std::uint32_t height = bottom_y - top_y;
-        auto upper_left = reinterpret_cast<volatile Colour15*>(
-            address::video_ram + (((top_y * video::lcd::width) + left_x) * 2)
-        );
+        const auto upper_left = reinterpret_cast<volatile Colour15*>(address::video_ram)
+            + (top_y * video::lcd::width + left_x);
 
         for (std::uint32_t i = 0; i < height; ++i) {
             for (std::uint32_t j = 0; j < length; ++j) {
@@ -49,7 +48,9 @@ public:
 
     static inline void fill(Colour15 colour) noexcept {
         const std::uint32_t word_length_colours = colour | (colour << 16);
-        for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) / 2); ++i) {
+        constexpr std::uint32_t word_scaled_size = video::lcd::size / 2;
+
+        for (std::uint32_t i = 0; i < word_scaled_size; ++i) {
             reinterpret_cast<volatile std::uint32_t*>(address::video_ram)[i] = word_length_colours;
         }
     }
@@ -66,9 +67,10 @@ public:
         std::uint32_t palette_num,
         std::uint32_t frame_number = 0
     ) noexcept {
-        auto two_points =
+        const auto two_points =
             reinterpret_cast<volatile std::uint16_t*>(address::video_ram + frame_offset(frame_number))
             + ((y * video::lcd::width + x) / 2);
+
         if ((x & 1) == 0) {
             *two_points = (*two_points & ~0xFF) | palette_num;
         } else {
@@ -81,10 +83,13 @@ public:
             | (palette_num << 8)
             | (palette_num << 16)
             | (palette_num << 24);
+        constexpr std::uint32_t word_scaled_frame = video::lcd::size / 4;
+        const auto frame = reinterpret_cast<volatile std::uint32_t*>(
+            address::video_ram + frame_offset(frame_number)
+        );
 
-        const std::uint32_t frame_address = address::video_ram + frame_offset(frame_number);
-        for (std::uint32_t i = 0; i < ((video::lcd::width * video::lcd::height) / 2); ++i) {
-            reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_palettes;
+        for (std::uint32_t i = 0; i < word_scaled_frame; ++i) {
+            frame[i] = word_length_palettes;
         }
     }
 
@@ -96,14 +101,18 @@ class bitmap<5> {
 public:
     static inline constexpr std::uint32_t width = 160;
     static inline constexpr std::uint32_t height = 128;
+    static inline constexpr std::uint32_t size = width * height;
 
-    static inline void plot(std::uint32_t x,
+    static inline void plot(
+        std::uint32_t x,
         std::uint32_t y,
         Colour15 colour,
         std::uint32_t frame_number = 0
     ) noexcept {
-        const std::uint32_t frame_address = address::video_ram + frame_offset(frame_number);
-        reinterpret_cast<volatile Colour15*>(frame_address)[y * width + x] = colour;
+        const auto frame = reinterpret_cast<volatile Colour15*>(
+            address::video_ram + frame_offset(frame_number)
+        );
+        frame[y * width + x] = colour;
     }
 
     static inline void rectangle(
@@ -116,11 +125,9 @@ public:
     ) noexcept {
         const std::uint32_t length = right_x - left_x;
         const std::uint32_t height = bottom_y - top_y;
-        auto upper_left = reinterpret_cast<volatile Colour15*>(
-            address::video_ram
-            + frame_offset(frame_number)
-            + (((top_y * width) + left_x) * 2)
-        );
+        const auto upper_left =
+            reinterpret_cast<volatile Colour15*>(address::video_ram + frame_offset(frame_number))
+            + (top_y * width + left_x);
 
         for (std::uint32_t i = 0; i < height; ++i) {
             for (std::uint32_t j = 0; j < length; ++j) {
@@ -130,11 +137,14 @@ public:
     }
 
     static inline void fill(Colour15 colour, std::uint32_t frame_number = 0) noexcept {
-        std::uint32_t word_length_colours = colour | (colour << 16);
-        const std::uint32_t frame_address = address::video_ram
-            + frame_offset(frame_number);
-        for (std::uint32_t i = 0; i < ((width * height) / 2); ++i) {
-            reinterpret_cast<volatile std::uint32_t*>(frame_address)[i] = word_length_colours;
+        const std::uint32_t word_length_colours = colour | (colour << 16);
+        constexpr std::uint32_t word_scaled_frame = bitmap<5>::size / 2;
+        const auto frame = reinterpret_cast<volatile std::uint32_t*>(
+            address::video_ram + frame_offset(frame_number)
+        );
+
+        for (std::uint32_t i = 0; i < word_scaled_frame; ++i) {
+            frame[i] = word_length_colours;
         }
     }
 

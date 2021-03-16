@@ -12,6 +12,7 @@ namespace video {
 namespace lcd {
     inline constexpr std::uint32_t width = 240;
     inline constexpr std::uint32_t height = 160;
+    inline constexpr std::uint32_t size = width * height;
     inline constexpr std::uint32_t horizontal_blank = 68;
     inline constexpr std::uint32_t vertical_blank = 68;
 }

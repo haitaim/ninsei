@@ -39,6 +39,7 @@ public:
     Mem_mapped_reg(Mem_mapped_reg&&) = delete;
     Mem_mapped_reg& operator=(const Mem_mapped_reg&) = delete;
     Mem_mapped_reg& operator=(Mem_mapped_reg&&) = delete;
+    ~Mem_mapped_reg() = default;
 };
 
 template <typename Reg_size, typename Reg_access, unsigned address>

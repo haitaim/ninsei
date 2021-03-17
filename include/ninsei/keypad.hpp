@@ -78,6 +78,7 @@ public:
     Keypad(Keypad&&) = delete;
     Keypad& operator=(const Keypad&) = delete;
     Keypad& operator=(Keypad&&) = delete;
+    ~Keypad() = default;
 private:
     static inline std::uint32_t current_key = 0;
     static inline std::uint32_t previous_key = 0;

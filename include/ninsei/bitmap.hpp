@@ -2,6 +2,7 @@
 //
 // Contains basic functions for GBA bitmap modes such as displaying individual
 // pixels and rectangles
+// Also includes Buffer_offset class to manage page flipping
 #ifndef NINSEI_BITMAP_HPP
 #define NINSEI_BITMAP_HPP
 
@@ -10,10 +11,26 @@
 #include <cstdint>
 
 namespace ninsei {
-// Helper function
-constexpr std::uint32_t frame_offset(std::uint32_t frame_number) noexcept {
-    return (frame_number & 1) * 0xA000;
-}
+
+class Buffer_offset {
+public:
+    constexpr Buffer_offset() noexcept : buffer_number { 0 } {}
+
+    void swap_buffer() noexcept {
+        buffer_number ^= 0xA000;
+    }
+
+    Buffer_offset(const Buffer_offset&) = default;
+    Buffer_offset(Buffer_offset&&) = delete;
+    Buffer_offset& operator=(const Buffer_offset&) = delete;
+    Buffer_offset& operator=(Buffer_offset&&) = delete;
+    ~Buffer_offset() = default;
+
+    template <unsigned mode>
+    friend class bitmap;
+private:
+    std::uint32_t buffer_number;
+};
 
 template <unsigned mode>
 class bitmap {
@@ -65,10 +82,10 @@ public:
         std::uint32_t x,
         std::uint32_t y,
         std::uint32_t palette_num,
-        std::uint32_t frame_number = 0
+        Buffer_offset offset = Buffer_offset{}
     ) noexcept {
         const auto two_points =
-            reinterpret_cast<volatile std::uint16_t*>(address::video_ram + frame_offset(frame_number))
+            reinterpret_cast<volatile std::uint16_t*>(address::video_ram + offset.buffer_number)
             + ((y * video::lcd::width + x) / 2);
 
         if ((x & 1) == 0) {
@@ -78,14 +95,14 @@ public:
         }
     }
 
-    static inline void fill(std::uint32_t palette_num, std::uint32_t frame_number = 0) noexcept {
+    static inline void fill(std::uint32_t palette_num, Buffer_offset offset = Buffer_offset{}) noexcept {
         const std::uint32_t word_length_palettes = palette_num
             | (palette_num << 8)
             | (palette_num << 16)
             | (palette_num << 24);
         constexpr std::uint32_t word_scaled_frame = video::lcd::size / 4;
         const auto frame = reinterpret_cast<volatile std::uint32_t*>(
-            address::video_ram + frame_offset(frame_number)
+            address::video_ram + offset.buffer_number
         );
 
         for (std::uint32_t i = 0; i < word_scaled_frame; ++i) {
@@ -107,10 +124,10 @@ public:
         std::uint32_t x,
         std::uint32_t y,
         Colour15 colour,
-        std::uint32_t frame_number = 0
+        Buffer_offset offset = Buffer_offset{}
     ) noexcept {
         const auto frame = reinterpret_cast<volatile Colour15*>(
-            address::video_ram + frame_offset(frame_number)
+            address::video_ram + offset.buffer_number
         );
         frame[y * width + x] = colour;
     }
@@ -121,12 +138,12 @@ public:
         std::uint32_t right_x,
         std::uint32_t bottom_y,
         Colour15 colour,
-        std::uint32_t frame_number = 0
+        Buffer_offset offset = Buffer_offset{}
     ) noexcept {
         const std::uint32_t length = right_x - left_x;
         const std::uint32_t height = bottom_y - top_y;
         const auto upper_left =
-            reinterpret_cast<volatile Colour15*>(address::video_ram + frame_offset(frame_number))
+            reinterpret_cast<volatile Colour15*>(address::video_ram + offset.buffer_number)
             + (top_y * width + left_x);
 
         for (std::uint32_t i = 0; i < height; ++i) {
@@ -136,11 +153,11 @@ public:
         }
     }
 
-    static inline void fill(Colour15 colour, std::uint32_t frame_number = 0) noexcept {
+    static inline void fill(Colour15 colour, Buffer_offset offset = Buffer_offset{}) noexcept {
         const std::uint32_t word_length_colours = colour | (colour << 16);
         constexpr std::uint32_t word_scaled_frame = bitmap<5>::size / 2;
         const auto frame = reinterpret_cast<volatile std::uint32_t*>(
-            address::video_ram + frame_offset(frame_number)
+            address::video_ram + offset.buffer_number
         );
 
         for (std::uint32_t i = 0; i < word_scaled_frame; ++i) {

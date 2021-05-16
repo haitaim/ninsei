@@ -21,7 +21,7 @@ The base class can stay though
   * Ninsei was something I came up with on a whim.
 There's reasons why I don't like it anymore, but I'll just leave it at that
 
-There isn't much to change, but I'd rather fool around with Tonclib first then continue work.
+There isn't much to change, but I'd rather fool around with Tonclib first than continue work.
 Speaking of which...
 ## Acknowlegements
 * [Tonc](http://coranac.com/tonc/text/) is an excellent resource for learning about the GBA
